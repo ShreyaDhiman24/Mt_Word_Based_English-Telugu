@@ -1,0 +1,24 @@
+# Ignore environment files
+env/
+venv/
+myenv/
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
+# Ignore log files
+*.log
+
+#Ignore large data files
+data/1_cleaned_en.txt
+data/1_cleaned_te.txt
+data/1b_cleaned_en.txt
+data/1b_cleaned_te.txt
+data/2_lowercase.txt
+data/3_combined.txt
+data/4_combined.txt
+data/5_word_map.txt
+
+#ignore large model
+save/
