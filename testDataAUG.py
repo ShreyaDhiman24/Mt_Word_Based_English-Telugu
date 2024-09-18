@@ -64,15 +64,15 @@ def evaluate_test(data, model):
     evaluate(data, model)
 
 if __name__ == '__main__':
-    from setting import TRAIN_FILE, DEV_FILE
+    from setting import TRAIN_FILE, DEV_FILE, TEST_FILE, SAVE_FILE
     from train import model
     from data_pre import PrepareData
 
     # Load the model state
-    model.load_state_dict(torch.load('save/n_modelp44.pt', map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(SAVE_FILE, map_location=torch.device('cpu')))
 
     # Prepare the data
-    data = PrepareData(TRAIN_FILE, DEV_FILE)
+    data = PrepareData(TRAIN_FILE, TEST_FILE)
 
     # Run the evaluation
     evaluate_test(data, model)

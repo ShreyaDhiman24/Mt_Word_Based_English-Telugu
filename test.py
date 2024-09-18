@@ -71,6 +71,6 @@ if __name__ == '__main__':
 
     # model.load_state_dict(torch.load('save/n_modelp.pt', map_location=torch.device('cpu')))
     # data = PrepareData(TRAIN_FILE, DEV_FILE)
-    data = PrepareData(TRAIN_FILE, TEST_FILE)
+    data = PrepareData(TRAIN_FILE, DEV_FILE)
 
     evaluate_test(data, model)

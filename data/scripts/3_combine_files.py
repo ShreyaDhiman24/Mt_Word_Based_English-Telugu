@@ -8,7 +8,7 @@ def combine_files(en_file, te_file, output_file):
             out_f.write(f"{en_line}\t{te_line}\n")
 
 if __name__ == '__main__':
-    en_file = 'data/z_lowercase.txt'  # English file
-    te_file = 'data/z_cleaned_te.txt'  # Telugu file
-    output_file = 'data/testp.txt'  # Output file
+    en_file = 'bleu/new_candidate.txt'  # English file
+    te_file = 'bleu/new_reference.txt'  # Telugu file
+    output_file = 'bleu/10_new_CandiReferenceAfterAUG.txt'  # Output file
     combine_files(en_file, te_file, output_file)

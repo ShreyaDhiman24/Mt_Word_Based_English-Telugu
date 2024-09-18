@@ -1,6 +1,6 @@
 # File paths
-input_file = "data/7_combinedFinal.txt"
-output_file = "data/7_revPaircombinedFinal.txt"
+input_file = "bleu/output_for_appending.txt"
+output_file = "bleu/output_for_appendingREV.txt"
 
 # Open the input file and output file
 with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
