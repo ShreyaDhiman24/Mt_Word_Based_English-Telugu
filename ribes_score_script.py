@@ -1,49 +1,5 @@
-#!/usr/bin/env python
-# -*- coding:utf-8-unix -*-
-###
-### RIBES.py - RIBES (Rank-based Intuitive Bilingual Evaluation Score) scorer
-### Copyright (C) 2011-2014  Nippon Telegraph and Telephone Corporation
-### 
-### This program is free software; you can redistribute it and/or
-### modify it under the terms of the GNU General Public License
-### as published by the Free Software Foundation; either version 2
-### of the License, or (at your option) any later version.
-### 
-### This program is distributed in the hope that it will be useful,
-### but WITHOUT ANY WARRANTY; without even the implied warranty of
-### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-### GNU General Public License for more details.
-### 
-### You should have received a copy of the GNU General Public License
-### along with this program; if not, write to the Free Software
-### Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-### 
-##  History
-##  version 1.03.1 (2014/9/8)   Fixed a compatibility problem of "split", which allows zero-length references wrongly with Python 2.
-##                              Introduced a new option "-z/--emptyref" to allow zero-length references, which would be helpful for evaluation on data with blank lines.
-##  version 1.03   (2014/8/13)  Supports Python 2.6 or higher
-##                              Eliminated encoding option (now RIBES.py only supports utf-8)
-##                              Limits word delimiters to ASCII white spaces (now multibyte spaces cannot be used as word delimiters)
-##  version 1.02.4 (2013/12/17) Fixed a problem in word alignment
-##  version 1.02.3 (2012/2/23)  Fixed a problem in output
-##  version 1.02.2 (2011/10/25) Fixed a problem without -o option (in systems without /dev/stdout)
-##  version 1.02.1 (2011/8/18)  Fixed bug on bytes.decode
-##  version 1.02   (2011/8/16)  Improved distinguishment of same words, with a little code refactoring
-##  version 1.01   (2011/8/10)  Fixed bug on empty lines
-##  version 1.0    (2011/8/1)   Initial release
-#
-# Reference:
-#  Tsutomu Hirao, Hideki Isozaki, Katsuhito Sudoh, Kevin Duh, Hajime Tsukada, and Masaaki Nagata,
-#  "Evaluating Translation Quality with Word Order Correlations,"
-#  Journal of Natural Language Processing, Vol. 21, No. 3, pp. 421-444, June, 2014 (in Japanese).
-#
-#  Hideki Isozaki, Tsutomu Hirao, Kevin Duh, Katsuhito Sudoh, and Hajime Tsukada,
-#  "Automatic Evaluation of Translation Quality for Distant Language Pairs,"
-#  Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing (EMNLP),
-#  pp. 944--952 Cambridge MA, October, 2010
-#  -- http://aclweb.org/anthology-new/D/D10/D10-1092.pdf
-
 from __future__ import print_function
+import os
 import importlib
 import sys
 
@@ -423,55 +379,104 @@ def outputRIBES (options, args, file=sys.stdout):
 
 ###
 ### main function
-###
-def main ():
-    # variable "debug" is global...
-    global debug
+# ###
+# def main ():
+#     # variable "debug" is global...
+#     global debug
 
-    usage = "%prog [options] system_outputs"
-    optparser = OptionParser(usage)
+#     usage = "%prog [options] system_outputs"
+#     optparser = OptionParser(usage)
 
-    ### option definitions
-    # -d/--debug : debug level (0: scores and start/end time, 1: +ref/hyp files)
-    optparser.add_option("-d", "--debug",    dest="debug",    default=0,                          type="int",    help="debug level",                         metavar="INT")
+#     ### option definitions
+#     # -d/--debug : debug level (0: scores and start/end time, 1: +ref/hyp files)
+#     optparser.add_option("-d", "--debug",    dest="debug",    default=0,                          type="int",    help="debug level",                         metavar="INT")
 
-    # -r/--ref : reference (multiple references available, repeat "-r REF" in arguments)
-    optparser.add_option("-r", "--ref",      dest="ref",      default=[],    action="append",     type="string", help="reference translation file (use multiple \"-r REF\" for multi-references)",          metavar="FILE")
+#     # -r/--ref : reference (multiple references available, repeat "-r REF" in arguments)
+#     optparser.add_option("-r", "--ref",      dest="ref",      default=[],    action="append",     type="string", help="reference translation file (use multiple \"-r REF\" for multi-references)",          metavar="FILE")
 
-    # -c/--case : preserve uppercase letters
-    optparser.add_option("-c", "--case",     dest="case",     default=False, action="store_true",                help="preserve uppercase letters in evaluation (default: False -- lowercasing all words)")
+#     # -c/--case : preserve uppercase letters
+#     optparser.add_option("-c", "--case",     dest="case",     default=False, action="store_true",                help="preserve uppercase letters in evaluation (default: False -- lowercasing all words)")
 
-    # -s/--sentence : show scores for every sentences
-    optparser.add_option("-s", "--sentence", dest="sent",     default=False, action="store_true",                help="output scores for every sentences")
+#     # -s/--sentence : show scores for every sentences
+#     optparser.add_option("-s", "--sentence", dest="sent",     default=False, action="store_true",                help="output scores for every sentences")
 
-    # -a/--alpha : "Unigram Precison" to the {alpha}-th power
-    optparser.add_option("-a", "--alpha",    dest="alpha",    default=0.25,                       type="float",  help="hyperparameter alpha (default=0.25)", metavar="FLOAT")
+#     # -a/--alpha : "Unigram Precison" to the {alpha}-th power
+#     optparser.add_option("-a", "--alpha",    dest="alpha",    default=0.25,                       type="float",  help="hyperparameter alpha (default=0.25)", metavar="FLOAT")
 
-    # -b/--beta : "Brevity Penalty" to the {beta}-th power
-    optparser.add_option("-b", "--beta",     dest="beta",     default=0.10,                       type="float",  help="hyperparameter beta  (default=0.10)", metavar="FLOAT")
+#     # -b/--beta : "Brevity Penalty" to the {beta}-th power
+#     optparser.add_option("-b", "--beta",     dest="beta",     default=0.10,                       type="float",  help="hyperparameter beta  (default=0.10)", metavar="FLOAT")
 
-    # -o/--output : output file
-    optparser.add_option("-o", "--output",   dest="output",   default="",              type="string", help="log output file",                     metavar="FILE")
+#     # -o/--output : output file
+#     optparser.add_option("-o", "--output",   dest="output",   default="",              type="string", help="log output file",                     metavar="FILE")
 
-    # -z/--emptyref : allow empty reference translations (ignored in the evaluation)
-    optparser.add_option("-z", "--emptyref",     dest="emptyref",     default=False, action="store_true",                help="allow empty reference translations (default: False -- raise RuntimeError in that case)")
+#     # -z/--emptyref : allow empty reference translations (ignored in the evaluation)
+#     optparser.add_option("-z", "--emptyref",     dest="emptyref",     default=False, action="store_true",                help="allow empty reference translations (default: False -- raise RuntimeError in that case)")
 
-    # args : system outputs
+#     # args : system outputs
 
-    # parse options
-    (options, args) = optparser.parse_args()
+#     # parse options
+#     (options, args) = optparser.parse_args()
 
-    # set debug level (global)
-    debug = options.debug
+#     # set debug level (global)
+#     debug = options.debug
 
-    if len(options.output) == 0:
-        # output to stdout
-        outputRIBES (options, args)
-    else:
-        # output file is automatically closed ...
-        with open (options.output, 'w') as ofp:
-            outputRIBES (options, args, file=ofp)
+#     if len(options.output) == 0:
+#         # output to stdout
+#         outputRIBES (options, args)
+#     else:
+#         # output file is automatically closed ...
+#         with open (options.output, 'w') as ofp:
+#             outputRIBES (options, args, file=ofp)
+#         # Initialize RIBESevaluator instance
+#     evaluator = RIBESevaluator(sent=options.sent, alpha=options.alpha, beta=options.beta, output=sys.stdout)
 
+#     # REFS : list of "Corpus" instance (for multi-reference)
+#     REFS = [Corpus(ref, case=options.case) for ref in options.ref]
+
+#     for i in range(len(args)):
+#         # Read system output and construct "Corpus" instance
+#         result = Corpus(args[i], case=options.case)
+
+#         # Evaluate by RIBES
+#         try:
+#             best_ribes = evaluator.eval(result, REFS, emptyref=options.emptyref)
+#             # Print results
+#             print(f"%.6f alpha={options.alpha} beta={options.beta} {args[i]}" % best_ribes)
+#         except Exception as e:
+#             print(f"Error during evaluation of {args[i]}: {e}", file=sys.stderr)
+
+#     # Print end time
+#     print(f"# RIBES evaluation done at {datetime.datetime.today()}", file=sys.stderr)
+
+def main():
+    # Define the file paths
+    reference_file = 'bleu/cleaned_reference.txt'
+    hypothesis_file =  'bleu/cleaned_candidate.txt'
+
+
+    # Define RIBES evaluation parameters
+    alpha = 0.25
+    beta = 0.10
+    case = False
+    emptyref = False
+
+    # Initialize the RIBESevaluator instance
+    evaluator = RIBESevaluator(sent=False, alpha=alpha, beta=beta, output=sys.stdout)
+
+    # Create Corpus instances for the reference and hypothesis files
+    ref_corpus = Corpus(reference_file, case=case)
+    hyp_corpus = Corpus(hypothesis_file, case=case)
+
+    # Evaluate the RIBES score
+    try:
+        best_ribes = evaluator.eval(hyp_corpus, [ref_corpus], emptyref=emptyref)
+        # Print the result
+        print(f"RIBES score: {best_ribes:.6f} (alpha={alpha}, beta={beta})")
+    except Exception as e:
+        print(f"Error during evaluation: {e}", file=sys.stderr)
+
+    # Print end time
+    print(f"# RIBES evaluation done at {datetime.datetime.today()}", file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -480,3 +485,7 @@ if __name__ == "__main__":
     except Exception as err:
         traceback.print_exc(file=sys.stderr)
         sys.exit(255)
+
+
+
+
