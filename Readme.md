@@ -30,5 +30,5 @@ Transformer Explanation
 Running the Project
 python train.py: Train the model and save it.
 
-
-
+Report: 
+[modelMLREPORT.pdf](https://github.com/user-attachments/files/17318342/modelMLREPORT.pdf)
