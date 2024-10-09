@@ -13,7 +13,7 @@ from optparse import OptionParser
 from math import exp
 
 _RIBES_VERSION = '1.03'
-debug = 0
+debug = 11
 
 multiws_pattern = re.compile(r'\s+')
 
@@ -389,7 +389,7 @@ def main():
     emptyref = False
 
     # Initialize the RIBESevaluator instance
-    evaluator = RIBESevaluator(sent=False, alpha=alpha, beta=beta, output=sys.stdout)
+    evaluator = RIBESevaluator(sent=True, alpha=alpha, beta=beta, output=sys.stdout)
 
     # Create Corpus instances for the reference and hypothesis files
     ref_corpus = Corpus(reference_file, case=case)
